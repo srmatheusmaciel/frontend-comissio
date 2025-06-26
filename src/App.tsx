@@ -1,11 +1,10 @@
 import LoginPage from './pages/LoginPage';
 import DashboardPage from "./pages/DashboardPage";
-
 import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
-
+import { AuthProvider } from "./contexts/AuthContext";
 
 const router = createBrowserRouter([
   {
@@ -21,7 +20,9 @@ const router = createBrowserRouter([
 function App() {
 
   return (
+    <AuthProvider>
     <RouterProvider router={router} />
+    </AuthProvider>
   )
    
 }

@@ -1,14 +1,21 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, User, Lock, Loader2 } from 'lucide-react';
+import { useAuth } from '../../contexts/AuthContext';
+import { login as apiLogin, type LoginCredentials } from '../../services/authService';
+import type { LoginResponse } from '../../services/authService';
 
-// Importando nossos novos blocos!
-import { login } from '../../services/authService';
-import type { LoginCredentials } from '../../services/authService';
 import { Button } from '../../components/ui/Button';
 import { Card } from '../../components/ui/Card';
 import { Input } from '../../components/ui/Input';
 
+import logoComissio from '../../assets/logo-comissio.png';
+
+
 const LoginPage = () => {
+  const navigate = useNavigate();
+  const { login } = useAuth();
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -22,10 +29,11 @@ const LoginPage = () => {
 
     try {
       const credentials: LoginCredentials = { username, password };
-      // Agora chamamos nossa função de serviço externa!
-      const data = await login(credentials);
-      console.log('Login bem-sucedido! Token:', data.token);
-      // Aqui, no futuro, salvaremos o token e redirecionaremos o usuário.
+      const data: LoginResponse = await apiLogin(credentials);
+      
+      login(data.token);
+
+      navigate('/');
 
     } catch (err) {
       setError('Falha no login. Verifique suas credenciais.');
@@ -36,11 +44,15 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 #1f2937 to-slate-900 flex items-center justify-center p-4">
       <div className="relative z-10 w-full max-w-md">
-        {/* ANTES: <div className="..."> */}
         <Card>
           <div className="text-center mb-8">
+            <img 
+                src={logoComissio} 
+                alt="Logo Comissio" 
+                className="w-64 h-64 mx-auto mb-6 rounded-full"
+              />
             <h1 className="text-3xl font-bold text-white mb-2">Login</h1>
             <p className="text-gray-400 text-sm">Entre na sua conta para continuar</p>
           </div>
@@ -50,7 +62,6 @@ const LoginPage = () => {
               <label className="block text-gray-300 text-sm font-medium mb-2">Usuário</label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 w-5 h-5" />
-                {/* ANTES: <input className="..."> */}
                 <Input
                   type="text"
                   value={username}
@@ -89,7 +100,6 @@ const LoginPage = () => {
               </div>
             )}
             
-            {/* ANTES: <button className="..."> */}
             <Button type="submit" disabled={loading}>
               {loading ? (
                 <div className="flex items-center justify-center space-x-2">
